@@ -1,0 +1,27 @@
+{
+  "name": "@ai-telemetry-toolkit/agents",
+  "version": "0.1.0",
+  "description": "Specialized AI agents for performance analysis",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ai-telemetry-toolkit/core": "workspace:*",
+    "@ai-telemetry-toolkit/otel": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "@ai-telemetry-toolkit/skills",
+  "version": "0.1.0",
+  "description": "Claude Code AI skill files for performance analysis",
+  "files": ["*.md"],
+  "scripts": {}
+}
