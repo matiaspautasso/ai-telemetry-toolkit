@@ -1,0 +1,27 @@
+{
+  "name": "@ai-telemetry-toolkit/chrome-bridge",
+  "version": "0.1.0",
+  "description": "Chrome DevTools MCP bridge — captures real frontend metrics and feeds them into TelemetryStore",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ai-telemetry-toolkit/core": "workspace:*",
+    "@ai-telemetry-toolkit/otel": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}

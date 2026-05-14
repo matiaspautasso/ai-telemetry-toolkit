@@ -106,6 +106,57 @@ export const tools: McpTool[] = [
     },
   },
   {
+    name: 'telemetry.captureFrontend',
+    description: 'Push frontend metrics captured from Chrome DevTools MCP (LCP, CLS, TTFB, Lighthouse scores, insights) into the TelemetryStore.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        url: { type: 'string', description: 'URL that was audited' },
+        lcp: { type: 'number', description: 'Largest Contentful Paint in ms' },
+        ttfb: { type: 'number', description: 'Time to First Byte in ms' },
+        cls: { type: 'number', description: 'Cumulative Layout Shift score' },
+        lighthouseAccessibility: { type: 'number', description: 'Lighthouse accessibility score 0-100' },
+        lighthouseBestPractices: { type: 'number', description: 'Lighthouse best practices score 0-100' },
+        lighthouseSeo: { type: 'number', description: 'Lighthouse SEO score 0-100' },
+        insights: { type: 'string', description: 'JSON array of {name, description, estimatedSavingsMs}' },
+      },
+      required: ['url'],
+    },
+    handler: (store, args) => {
+      const url = String(args['url'] ?? '');
+      const ts = Date.now();
+
+      if (args['lcp'] !== undefined) {
+        store.addFrontendMetric({ timestamp: ts, type: 'lcp', name: 'LCP', valueMs: Number(args['lcp']), component: url, attributes: { url } });
+      }
+      if (args['ttfb'] !== undefined) {
+        store.addFrontendMetric({ timestamp: ts, type: 'ttfb', name: 'TTFB', valueMs: Number(args['ttfb']), attributes: { url } });
+      }
+      if (args['cls'] !== undefined) {
+        store.addFrontendMetric({ timestamp: ts, type: 'cls', name: 'CLS', score: Number(args['cls']), attributes: { url } });
+      }
+      if (args['lighthouseAccessibility'] !== undefined) {
+        store.addFrontendMetric({ timestamp: ts, type: 'custom', name: 'Lighthouse Accessibility', score: Number(args['lighthouseAccessibility']) / 100, attributes: { url } });
+      }
+      if (args['lighthouseBestPractices'] !== undefined) {
+        store.addFrontendMetric({ timestamp: ts, type: 'custom', name: 'Lighthouse Best Practices', score: Number(args['lighthouseBestPractices']) / 100, attributes: { url } });
+      }
+      if (args['lighthouseSeo'] !== undefined) {
+        store.addFrontendMetric({ timestamp: ts, type: 'custom', name: 'Lighthouse SEO', score: Number(args['lighthouseSeo']) / 100, attributes: { url } });
+      }
+      if (args['insights']) {
+        try {
+          const insights = JSON.parse(String(args['insights'])) as Array<{ name: string; description: string; estimatedSavingsMs?: number }>;
+          for (const insight of insights) {
+            store.addFrontendMetric({ timestamp: ts, type: 'custom', name: insight.name, valueMs: insight.estimatedSavingsMs, attributes: { url, description: insight.description } });
+          }
+        } catch { /* invalid JSON — skip */ }
+      }
+
+      return { stored: true, url, capturedAt: new Date(ts).toISOString(), message: 'Frontend metrics stored. Call telemetry.getFrontendMetrics to retrieve.' };
+    },
+  },
+  {
     name: 'telemetry.generateOptimizationPlan',
     description: 'Generate a prioritized optimization action plan based on current telemetry.',
     inputSchema: { type: 'object', properties: {} },
